@@ -58,3 +58,4 @@ the most effective, as the model had more context and examples to learn from, re
 Overall, while all three prompting techniques were effective in this scenario, few-shot prompting provided the most context and examples, 
 leading to the highest accuracy in classification. Zero-shot and one-shot prompting were also successful, but they may not always perform as 
 well in more complex classification tasks."""
+
