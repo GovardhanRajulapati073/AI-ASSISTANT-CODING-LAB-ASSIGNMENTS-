@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Exam</title>
+
+<style>
+body {
+    font-family: Arial;
+    padding: 20px;
+    background: #f4f4f4;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+
+.timer {
+    font-size: 20px;
+    color: red;
+    text-align: right;
+}
+
+.question {
+    background: white;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+button {
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Online Examination</h1>
+
+    <div class="timer">Time Left: <span id="time">60</span>s</div>
+
+    <form id="examForm"></form>
+
+    <button id="submitBtn" onclick="submitExam()">Submit</button>
+
+    <h2 id="result"></h2>
+</div>
+
+<script>
+// QUESTIONS
+const questions = [
+    { q: "What is 2 + 2?", options: ["3","4","5"], answer: "4" },
+    { q: "Capital of India?", options: ["Delhi","Mumbai","Chennai"], answer: "Delhi" }
+];
+
+// STATE
+let state = {
+    answers: {},
+    submitted: localStorage.getItem("submitted") === "true"
+};
+
+// TIMER
+let timeLeft = 60;
+let timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").innerText = timeLeft;
+
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        submitExam();
+    }
+}, 1000);
+
+// RENDER QUESTIONS
+function renderQuestions() {
+    const form = document.getElementById("examForm");
+
+    questions.forEach((q, index) => {
+        let html = `<div class="question">
+            <p>${index+1}. ${q.q}</p>`;
+
+        q.options.forEach(opt => {
+            html += `
+                <label>
+                    <input type="radio" name="q${index}" value="${opt}" 
+                    onchange="saveAnswer(${index}, '${opt}')">
+                    ${opt}
+                </label><br>`;
+        });
+
+        html += `</div>`;
+        form.innerHTML += html;
+    });
+}
+
+// SAVE ANSWER
+function saveAnswer(index, value){
+    state.answers[index] = value;
+}
+
+// SUBMIT
+function submitExam(){
+    if(state.submitted){
+        alert("Already submitted!");
+        return;
+    }
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    questions.forEach((q, i)=>{
+        if(state.answers[i] === q.answer){
+            score++;
+        }
+    });
+
+    document.getElementById("result").innerText = 
+        `Your Score: ${score}/${questions.length}`;
+
+    state.submitted = true;
+    localStorage.setItem("submitted", true);
+
+    document.getElementById("submitBtn").classList.add("disabled");
+}
+
+// INIT
+renderQuestions();
+
+if(state.submitted){
+    document.getElementById("submitBtn").classList.add("disabled");
+}
+</script>
+
+</body>
+</html>
